@@ -15,23 +15,21 @@ namespace API.Controllers
     [Authorize]
     public class LikesController : BaseApiController
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ILikesRepository _likes;
+        private readonly IUserRepository _userRepository;     
         private readonly ILikesRepository _likesRepository;
         public LikesController(IUserRepository userRepository, ILikesRepository likesRepository)
         {
-            _likesRepository = likesRepository;
-            
+            _likesRepository = likesRepository;    
             _userRepository = userRepository;
         }
 
         [HttpPost("{username}")]
         public async Task<ActionResult> AddLike(string username)
         {
-            var sourceUserId = User.GetUserId();
+             var sourceUserId = User.GetUserId();
             var likedUser = await _userRepository.GetUserByUsernameAsync(username);
             var sourceUser = await _likesRepository.GetUserWithLikes(sourceUserId);
-
+            
             if (likedUser == null) return NotFound();
 
             if (sourceUser.UserName == username) return BadRequest("You cannot like yourself");
@@ -44,7 +42,6 @@ namespace API.Controllers
             {
                 SourceUserId = sourceUserId,
                 LikedUserId = likedUser.Id
-
             };
 
             sourceUser.LikedUsers.Add(userLike);
@@ -53,7 +50,6 @@ namespace API.Controllers
 
             return BadRequest("Failed to like user");
         }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LikeDto>>> GetUserLikes([FromQuery]LikesParams likesParams)
         {

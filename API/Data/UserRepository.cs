@@ -49,7 +49,7 @@ namespace API.Data
             };
 
 
-            return await PagedList<MemberDto>.CreatedAsync(query.ProjectTo<MemberDto>(_mapper
+            return await PagedList<MemberDto>.CreateAsync(query.ProjectTo<MemberDto>(_mapper
                 .ConfigurationProvider).AsNoTracking(),
                    userParams.PageNumber, userParams.PageSize);
                

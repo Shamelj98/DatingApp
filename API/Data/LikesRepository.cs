@@ -1,13 +1,12 @@
-﻿
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Helpers;
 using API.Interfaces;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
@@ -19,9 +18,9 @@ namespace API.Data
             _context = context;
         }
 
-        public async Task<UserLike> GetUserLike(int sourceUserId, int likeUserId)
+        public async Task<UserLike> GetUserLike(int sourceUserId, int likedUserId)
         {
-            return await _context.Likes.FindAsync(sourceUserId, likeUserId);
+            return await _context.Likes.FindAsync(sourceUserId, likedUserId);
         }
 
         public async Task<PagedList<LikeDto>> GetUserLikes(LikesParams likesParams)
@@ -49,19 +48,17 @@ namespace API.Data
                 PhotoUrl = user.Photos.FirstOrDefault(p => p.IsMain).Url,
                 City = user.City,
                 Id = user.Id
-
-
             });
 
-            return await PagedList<LikeDto>.CreatedAsync(likedUsers, 
+            return await PagedList<LikeDto>.CreateAsync(likedUsers, 
                 likesParams.PageNumber, likesParams.PageSize);
         }
 
         public async Task<AppUser> GetUserWithLikes(int userId)
         {
             return await _context.Users
-            .Include(x => x.LikedUsers)
-            .FirstOrDefaultAsync(x => x.Id == userId);
+                .Include(x => x.LikedUsers)
+                .FirstOrDefaultAsync(x => x.Id == userId);
         }
     }
 }
